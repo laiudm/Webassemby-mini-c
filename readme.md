@@ -2,7 +2,7 @@ Webassembly-mini-c
 ==================
 
 This is the result of a challenge I set myself - to modify an existing simple compiler to generate webassembly binary and
-which can self-compile from within the browser.
+which can self-compile from within the browser. The end result can be seen here: http://wa-compiler.netlify.com/
 
 As a starting point I used was Sam Nipps (Fedjmike) excellent mini-c compiler here: http://github.com/Fedjmike/mini-c. I was 
 already familiar with this code as I had previously modified it to generate arm code instead of x86 code (see: https://github.com/laiudm/mini-c).
