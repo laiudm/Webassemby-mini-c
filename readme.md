@@ -1,51 +1,53 @@
-mini-c
-======
+Webassembly-mini-c
+==================
 
--- this branch has an updated cc.c file that generates arm code instead of x86 code. --
+This is the result of a challenge I set myself - to modify an existing simple compiler to generate webassembly binary and
+which can self-compile from within the browser.
 
+As a starting point I used was Sam Nipps (Fedjmike) excellent mini-c compiler here: http://github.com/Fedjmike/mini-c. I was 
+already familiar with this code as I had previously modified it to generate arm code instead of x86 code (see: https://github.com/laiudm/mini-c).
 
+This code is a dramatic change from the original code - it's now twice as long - which is why this code is in it's own repo, and not a branch
+from the original. The core parser remains very similar, but extensive work was required to add library functions, to work reliably with binary data,
+and to produce the relatively complex webassembly wasm binary format.
 
-I set myself a challenge: write a self-hosting C compiler in 10 hours. This is the result, plus lots of cleanup (check "releases" for the 10 hour version).
+The following is derived from Sam's original mini-c documents.
 
 Implementation:
-- Generates 32-bit x86 assembly, which is then assembled and linked by GCC.
-- It is all implemented in a single pass. Code generation is mixed with parsing. This requires some creativity.
+- Generates a binary webassebly file (wasm) by combing compilation, assembly, and linking into a single program.
+- It is implemented as a single pass compiler - code generation is mixed with parsing.
 - The parser peeks at the next token to decide whether to generate an lvalue.
+- It compiles and runs in both Windows and Linux host environments, as well as the browser.
+- A minimal set of library functions are implemented to allow it to run in both the host environments and in the browser.
 
 Language:
 - Local and global variables, parameters.
 - Functions, `if`, `while`, `do``while`, `return`.
-- `=`, `?:` (ternary), `||`, `&&`, `==`, `!=`, `<`, `>=`, `+`, `-`, `*`, `++`, `--` (post-ops), `!`, `-` (unary), `[]`, `()`
+- `=`, `?:` (ternary), `||`, `&&`, `==`, `!=`, `<`, `<=`, `>`, `>=`, `+`, `-`, `*`, `/`, `%`, `++`, `--` (post-ops), `!`, `-` (unary), `[]`, `()`
 - Integer, character, `true` and `false` literals. String literals, with automatic concatenation.
 - The language it implements is typeless. Everything is a 4 byte signed integer.
 - Pointer indexing works in increments of 4 bytes, pointer arithmetic is byte-by-byte.
 
-The general philosophy was: only include a feature if it reduces the total code size. This is taken to its extreme in the `insane` branch.
+The general philosophy was: only include a feature if it is needed by the compiler code.
 
-Building and running it
------------------------
+Building it and Compiling it to wasm for the website
+----------------------------------------------------
 
-    git clone http://github.com/Fedjmike/mini-c
-    cd mini-c
-    make selftest
+    git clone https://github.com/laiudm/Webassemby-mini-c
+    cd Webassemby-mini-c
+    cc -o cc cc.c	## ignore the 3x warnings.
+	./cc cc.c		## generates the program.wasm file as expected by the website
 
-This will first produce `cc` by compiling mini-c with GCC. Then it makes `ccself` by compiling mini-c with `cc`. Finally it makes `test/triangular` using `ccself`, and checks the result. You should get something like this:
+If on windows, replace the compilation step with
+	cl cc.c
 
-    $ make selftest
-    gcc -std=c11 -Werror -Wall cc.c -o cc
-    cc cc.c
-    gcc -m32 a.s -o ccself
-    ccself tests/triangular.c
-    gcc -m32 a.s -o triangular; triangular 5; [ $? -eq 15 ]
+Running in a Browser
+--------------------
 
-If you are on Windows, you will need to checkout the `windows` branch. On 64 bit Linux, you may need to `sudo apt-get install gcc-multilib` to be able to compile and run the 32 bit code.
+The files in the directory can be served by any webserver. For instance if python is installed:
 
-Related
--------
+	python -m SimpleHTTPServer 9000
 
-Another microscopic C compiler is [c4](https://github.com/rswier/c4) by `rswier`. He implemented more C, but I'd say mine is simpler :). Also, c4 generates code for its own VM, whereas mine has the significant difficulty of working with x86 assembly and cdecl.
-
-I wrote another, much more advanced C compiler. [Check it out](https://github.com/Fedjmike/fcc). It too is self-hosting, but with a much more complete feature set, and even some experimental additions like lambdas.
 
 License
 -------
