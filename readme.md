@@ -14,7 +14,7 @@ and to produce the relatively complex webassembly wasm binary format.
 The following is derived from Sam's original mini-c documents.
 
 Implementation:
-- Generates a binary webassebly file (wasm) by combing compilation, assembly, and linking into a single program.
+- Generates a binary webassebly file (wasm) by combining compilation, assembly, and linking into a single program.
 - It is implemented as a single pass compiler - code generation is mixed with parsing.
 - The parser peeks at the next token to decide whether to generate an lvalue.
 - It compiles and runs in both Windows and Linux host environments, as well as the browser.
